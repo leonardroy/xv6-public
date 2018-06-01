@@ -543,7 +543,7 @@ reparent(int pid)
 
   for (p = ptable.proc; p < &ptable.proc[NPROC];p++){
     if(p->pid == pid){
-      p->parent = initproc;
+      myproc()->parent = p;
       release(&ptable.lock);
       return;
     }

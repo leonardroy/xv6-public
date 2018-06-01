@@ -98,5 +98,5 @@ sys_reparent(void)
   if(argint(0, &pid) < 0)
     return -1;
   reparent(pid);
-  return;
+  return 0;
 }
