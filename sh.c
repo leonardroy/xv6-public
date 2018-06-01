@@ -58,6 +58,7 @@ void
 runcmd(struct cmd *cmd)
 {
   int p[2];
+  int reparentpid;
   struct backcmd *bcmd;
   struct execcmd *ecmd;
   struct listcmd *lcmd;
@@ -123,8 +124,11 @@ runcmd(struct cmd *cmd)
 
   case BACK:
     bcmd = (struct backcmd*)cmd;
-    if(fork1() == 0)
+    reparentpid = fork1();
+    if(reparentpid == 0)
       runcmd(bcmd->cmd);
+    else
+      reparent(reparentpid);
     break;
   }
   exit();

@@ -547,7 +547,7 @@ reparent(int pid)
       release(&ptable.lock);
       return;
     }
-}	
+  }
   release(&ptable.lock);
   return;
 }
