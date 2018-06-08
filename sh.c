@@ -53,11 +53,14 @@ int fork1(void);  // Fork but panics on failure.
 void panic(char*);
 struct cmd *parsecmd(char*);
 
+//cache for last cmd
+char lastcmd[100];
 // Execute cmd.  Never returns.
 void
 runcmd(struct cmd *cmd)
 {
   int p[2];
+  int lastcmd_len = strlen(lastcmd);
   struct backcmd *bcmd;
   struct execcmd *ecmd;
   struct listcmd *lcmd;
@@ -75,7 +78,17 @@ runcmd(struct cmd *cmd)
     ecmd = (struct execcmd*)cmd;
     if(ecmd->argv[0] == 0)
       exit();
-    exec(ecmd->argv[0], ecmd->argv);
+    if (ecmd->argv[0] == 'b' && ecmd->argv[1] == 'g'){
+      lastcmd[lastcmd_len - 1] = ' ';
+      lastcmd[lastcmd_len] = '&';
+      lastcmd[lastcmd_len + 1] = '\0';
+      rumcmd(parsecmd(lastcmd));
+      lastcmd[lastcmd_len - 1] = '\0';
+      break;
+    }
+    else{
+      exec(ecmd->argv[0], ecmd->argv);
+    }
     printf(2, "exec %s failed\n", ecmd->argv[0]);
     break;
 
@@ -159,6 +172,7 @@ main(void)
 
   // Read and run input commands.
   while(getcmd(buf, sizeof(buf)) >= 0){
+    strcpy(lastcmd, buf);
     if(buf[0] == 'c' && buf[1] == 'd' && buf[2] == ' '){
       // Chdir must be called by the parent, not the child.
       buf[strlen(buf)-1] = 0;  // chop \n
