@@ -36,4 +36,4 @@ void* memset(void*, int, uint);
 void* malloc(uint);
 void free(void*);
 int atoi(const char*);
-int readline(int fd, char* line, int n);
+int fgproc(void);
