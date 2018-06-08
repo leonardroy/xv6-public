@@ -54,13 +54,14 @@ void panic(char*);
 struct cmd *parsecmd(char*);
 
 //cache for last cmd
-char lastcmd[100];
+char lastcmd[2][100];
+int lastcmd_pointer;
 // Execute cmd.  Never returns.
 void
 runcmd(struct cmd *cmd)
 {
   int p[2];
-  int lastcmd_len = strlen(lastcmd);
+  int lastcmd_len = strlen(lastcmd[lastcmd_pointer]);
   struct backcmd *bcmd;
   struct execcmd *ecmd;
   struct listcmd *lcmd;
@@ -78,12 +79,14 @@ runcmd(struct cmd *cmd)
     ecmd = (struct execcmd*)cmd;
     if(ecmd->argv[0] == 0)
       exit();
-    if (ecmd->argv[0] == 'b' && ecmd->argv[1] == 'g'){
-      lastcmd[lastcmd_len - 1] = ' ';
-      lastcmd[lastcmd_len] = '&';
-      lastcmd[lastcmd_len + 1] = '\0';
-      rumcmd(parsecmd(lastcmd));
-      lastcmd[lastcmd_len - 1] = '\0';
+    if (ecmd->argv[0][0] == 'b' && ecmd->argv[0][1] == 'g'){
+	
+      lastcmd[lastcmd_pointer][lastcmd_len - 1] = ' ';
+      lastcmd[lastcmd_pointer][lastcmd_len] = '&';
+      lastcmd[lastcmd_pointer][lastcmd_len + 1] = '\0';
+printf(2,"%s",lastcmd[lastcmd_pointer]);
+      runcmd(parsecmd(lastcmd[lastcmd_pointer]));
+      lastcmd[lastcmd_pointer][lastcmd_len - 1] = '\0';
       break;
     }
     else{
@@ -172,7 +175,8 @@ main(void)
 
   // Read and run input commands.
   while(getcmd(buf, sizeof(buf)) >= 0){
-    strcpy(lastcmd, buf);
+    strcpy(lastcmd[lastcmd_pointer], buf);
+lastcmd_pointer = 1-lastcmd_pointer;
     if(buf[0] == 'c' && buf[1] == 'd' && buf[2] == ' '){
       // Chdir must be called by the parent, not the child.
       buf[strlen(buf)-1] = 0;  // chop \n
