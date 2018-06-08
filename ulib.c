@@ -96,10 +96,41 @@ void*
 memmove(void *vdst, void *vsrc, int n)
 {
   char *dst, *src;
-
+  
   dst = vdst;
   src = vsrc;
   while(n-- > 0)
     *dst++ = *src++;
   return vdst;
+}
+
+int 
+readline(int fd, char* line, int n){
+  //printf(2,"welcome to readline\n");
+  strcpy(line, "\0");
+  int i = 0;
+  for(i = 0; i < n; i++){
+    char buf[2];
+    int m = read(fd, buf, 1);
+	//printf(2,"%s\n",buf);
+	//printf(2,"%d\n",m);
+    if(m == 0){//read over
+      return i;
+    }
+    else if(m < 0){//read error
+      return -1;
+    }
+    if(buf[0]=='\n'){
+      break;
+    }
+    char bufarray[2];
+		bufarray[0] = buf[0];
+		bufarray[1] = '\0';
+		strcpy(line + strlen(line), bufarray);
+  }
+  strcpy(&line[strlen(line)],"\0");
+  if(i <= n){//return the line lenth
+    return i;
+  }
+  else return n+1;//n is too small 
 }
