@@ -1,5 +1,4 @@
 struct stat;
-struct rtcdate;
 
 // system calls
 int fork(void);
@@ -23,7 +22,6 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
-int reparent(int, int);
 
 // ulib.c
 int stat(char*, struct stat*);
@@ -38,3 +36,4 @@ void* memset(void*, int, uint);
 void* malloc(uint);
 void free(void*);
 int atoi(const char*);
+int readline(int fd, char* line, int n);
